@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using DaprDemo.Events;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DaprDemo.Controllers
@@ -11,11 +12,6 @@ namespace DaprDemo.Controllers
         public async Task<IActionResult> GetAsync() => await Task.FromResult(Ok());
         
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody]Demo demo) => await Task.FromResult(Ok());
-
-        public class Demo
-        {
-            public int Id { get; set; }
-        }
+        public async Task<IActionResult> PostAsync([FromBody]CloudEvent<Demo> demo, [FromServices]IService service) => Ok(await service.Do(demo.Data));
     }
 }
