@@ -9,9 +9,14 @@ namespace DaprDemo.Controllers
     public class DemoController : ControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> GetAsync() => await Task.FromResult(Ok());
+        public IActionResult GetAsync() => 
+            Ok();
         
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody]CloudEvent<Demo> demo, [FromServices]IService service) => Ok(await service.Do(demo.Data));
+        public IActionResult PostAsync([FromBody]CloudEvent<Demo> demo, [FromServices]IService service)
+        {
+            service.Do(demo.Data);
+            return Ok();
+        }
     }
 }

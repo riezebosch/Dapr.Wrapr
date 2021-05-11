@@ -1,7 +1,6 @@
 using System;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using Dapr.Client;
 using DaprDemo.Events;
@@ -9,29 +8,23 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using NSubstitute;
 using Xunit;
 
 namespace DaprDemo.IntegrationTests
 {
     public sealed class DemoControllerTests : IDisposable
     {
-        private readonly AutoResetEvent _received = new(false);
-        private readonly IService _service = Substitute.For<IService>();
+        private readonly DummyService _service = new();
         private readonly IHost _host; 
 
         public DemoControllerTests()
         {
             _host = new HostBuilder().ConfigureWebHost(app => app
                     .UseStartup<Startup>()
-                    .ConfigureServices(services => services.AddSingleton(_service))
+                    .ConfigureServices(services => services.AddSingleton<IService>(_service))
                     .UseKestrel(options => options.ListenLocalhost(5000)))
                 .Build();
             _host.Start();
-            
-            _service
-                .When(async x => await x.Do(Arg.Any<Demo>()))
-                .Do(_ => _received.Set());
         }
         
         [Fact]
@@ -48,9 +41,6 @@ namespace DaprDemo.IntegrationTests
                 });
             
             response.EnsureSuccessStatusCode();
-            await _service
-                .Received()
-                .Do(new Demo { Value = 1234 });
         }
         
         [Fact]
@@ -67,21 +57,22 @@ namespace DaprDemo.IntegrationTests
                 {
                     Value = 1234
                 });
-            
-            _received
-                .WaitOne(TimeSpan.FromSeconds(20))
-                .Should()
-                .BeTrue();
 
-            await _service
-                .Received()
-                .Do(new Demo { Value = 1234 });
+            var result = await _service.Received();
+            result.Should().Be(new Demo { Value = 1234 });
         }
 
-        void IDisposable.Dispose()
-        {
-             _received.Dispose();
+        void IDisposable.Dispose() => 
             _host.Dispose();
+
+        private class DummyService : IService
+        {
+            private readonly TaskCompletionSource<Demo> _received = new ();
+            public Task<Demo> Received() => 
+                _received.Task;
+
+            void IService.Do(Demo demo) => 
+                _received.SetResult(demo);
         }
     }
 }
