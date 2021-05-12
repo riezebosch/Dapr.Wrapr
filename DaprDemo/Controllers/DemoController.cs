@@ -1,5 +1,5 @@
-using System.Threading.Tasks;
 using DaprDemo.Events;
+using DaprDemo.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DaprDemo.Controllers
@@ -13,9 +13,9 @@ namespace DaprDemo.Controllers
             Ok();
         
         [HttpPost]
-        public IActionResult PostAsync([FromBody]CloudEvent<Demo> demo, [FromServices]IService service)
+        public IActionResult PostAsync([FromBody]CloudEvent<Data> @event, [FromServices]IDemoService service)
         {
-            service.Do(demo.Data);
+            service.Demo(@event.Data);
             return Ok();
         }
     }

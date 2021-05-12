@@ -4,24 +4,27 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Dapr.Client;
 using DaprDemo.Events;
+using DaprDemo.Services;
 using FluentAssertions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Xunit;
+using Hypothesize;
+using NSubstitute;
 
 namespace DaprDemo.IntegrationTests
 {
     public sealed class DemoControllerTests : IDisposable
     {
-        private readonly DummyService _service = new();
-        private readonly IHost _host; 
+        private readonly IHost _host;
+        private readonly IDemoService _service = Substitute.For<IDemoService>();
 
         public DemoControllerTests()
         {
             _host = new HostBuilder().ConfigureWebHost(app => app
                     .UseStartup<Startup>()
-                    .ConfigureServices(services => services.AddSingleton<IService>(_service))
+                    .ConfigureServices(services => services.AddSingleton(_service))
                     .UseKestrel(options => options.ListenLocalhost(5000)))
                 .Build();
             _host.Start();
@@ -36,7 +39,7 @@ namespace DaprDemo.IntegrationTests
                 {
                     data = new
                     {
-                        value = 1234
+                        value = 8374
                     }
                 });
             
@@ -46,6 +49,14 @@ namespace DaprDemo.IntegrationTests
         [Fact]
         public async Task FromEvent()
         {
+            var hypothesis = Future
+                .Any<Data>(x => x.Should().Be(new Data { Value = 1234 }))
+                .Within(TimeSpan.FromSeconds(10));
+            
+            _service
+                .When(x => x.Demo(Arg.Any<Data>()))
+                .Do(x => hypothesis.Test(x.Arg<Data>()));
+
             // Make sure the sidecar is running before executing this test! See README.md
             var client = new DaprClientBuilder()
                 .UseGrpcEndpoint("http://localhost:3000")
@@ -58,21 +69,10 @@ namespace DaprDemo.IntegrationTests
                     Value = 1234
                 });
 
-            var result = await _service.Received();
-            result.Should().Be(new Demo { Value = 1234 });
+            await hypothesis.Validate();
         }
 
         void IDisposable.Dispose() => 
             _host.Dispose();
-
-        private class DummyService : IService
-        {
-            private readonly TaskCompletionSource<Demo> _received = new ();
-            public Task<Demo> Received() => 
-                _received.Task;
-
-            void IService.Do(Demo demo) => 
-                _received.SetResult(demo);
-        }
     }
 }

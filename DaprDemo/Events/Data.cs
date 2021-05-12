@@ -1,6 +1,6 @@
 namespace DaprDemo.Events
 {
-    public record Demo
+    public record Data
     {
         public int Value { get; set; }   
     }
