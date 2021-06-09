@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 using Dapr.Client;
 using DaprDemo.Events;
 using DaprDemo.Services;
-using FluentAssertions;
+using FluentAssertions.Extensions;
+using Hypothesist;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Xunit;
-using Hypothesize;
 using NSubstitute;
 
 namespace DaprDemo.IntegrationTests
@@ -49,9 +49,9 @@ namespace DaprDemo.IntegrationTests
         [Fact]
         public async Task FromEvent()
         {
-            var hypothesis = Future
-                .Any<Data>(x => x.Should().Be(new Data { Value = 1234 }))
-                .Within(TimeSpan.FromSeconds(10));
+            var hypothesis = Hypothesis
+                .For<Data>()
+                .Any(x => x.Value == 1234);
             
             _service
                 .When(x => x.Demo(Arg.Any<Data>()))
@@ -69,7 +69,7 @@ namespace DaprDemo.IntegrationTests
                     Value = 1234
                 });
 
-            await hypothesis.Validate();
+            await hypothesis.Validate(10.Seconds());
         }
 
         void IDisposable.Dispose() => 
