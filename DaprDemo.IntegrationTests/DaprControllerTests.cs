@@ -20,7 +20,7 @@ namespace DaprDemo.IntegrationTests
 
             response
                 .Should()
-                .BeEquivalentTo(new[] { new Subscription("rabbitmq-pubsub", "Demo", "demo")});
+                .BeEquivalentTo(new Subscription("rabbitmq-pubsub", "Demo", "demo"));
         }
 
         private record Subscription(string pubsubname, string topic, string route);

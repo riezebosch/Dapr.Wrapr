@@ -51,7 +51,7 @@ namespace DaprDemo.IntegrationTests
         {
             var hypothesis = Hypothesis
                 .For<Data>()
-                .Any(x => x.Value == 1234);
+                .Any(x => x == new Data(1234));
             
             _service
                 .When(x => x.Demo(Arg.Any<Data>()))
