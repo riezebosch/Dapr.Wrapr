@@ -39,7 +39,12 @@ namespace DaprDemo
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseCloudEvents();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapSubscribeHandler();
+            });
         }
     }
 }
