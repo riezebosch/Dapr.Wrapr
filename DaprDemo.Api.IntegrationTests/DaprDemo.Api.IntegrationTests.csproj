@@ -24,7 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DaprDemo\DaprDemo.csproj" />
+      <ProjectReference Include="..\DaprDemo.Api\DaprDemo.Api.csproj" />
     </ItemGroup>
 
     <ItemGroup>

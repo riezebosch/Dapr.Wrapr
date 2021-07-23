@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Dapr.AspNetCore" Version="1.2.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\DaprDemo.Handler.Slow\DaprDemo.Handler.Slow.csproj" />
+      <ProjectReference Include="..\DaprDemo\DaprDemo.csproj" />
+    </ItemGroup>
+
+</Project>

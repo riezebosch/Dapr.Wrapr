@@ -3,8 +3,6 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Dapr.Client;
-using DaprDemo.Events;
-using DaprDemo.Services;
 using FluentAssertions.Extensions;
 using Hypothesist;
 using Microsoft.AspNetCore.Hosting;
@@ -13,19 +11,19 @@ using Microsoft.Extensions.Hosting;
 using Xunit;
 using NSubstitute;
 
-namespace DaprDemo.IntegrationTests
+namespace DaprDemo.Api.IntegrationTests
 {
     public sealed class DemoControllerTests : IDisposable
     {
         private readonly IHost _host;
-        private readonly IDemoService _service = Substitute.For<IDemoService>();
+        private readonly IHandler<int, int> _service = Substitute.For<IHandler<int, int>>();
 
         public DemoControllerTests()
         {
             _host = new HostBuilder().ConfigureWebHost(app => app
                     .UseStartup<Startup>()
                     .ConfigureServices(services => services.AddSingleton(_service))
-                    .UseKestrel(options => options.ListenLocalhost(5000)))
+                    .UseKestrel(options => options.ListenLocalhost(5555)))
                 .Build();
             _host.Start();
         }
@@ -35,7 +33,7 @@ namespace DaprDemo.IntegrationTests
         {
             using var client = new HttpClient();
             var response = await client
-                .PostAsJsonAsync("http://localhost:5000/demo/", new
+                .PostAsJsonAsync("http://localhost:5555/demo/", new
                 {
                     data = new
                     {
@@ -50,17 +48,17 @@ namespace DaprDemo.IntegrationTests
         public async Task FromEvent()
         {
             var hypothesis = Hypothesis
-                .For<Data>()
-                .Any(x => x == new Data(1234));
-            
+                .For<int>()
+                .Any(x => x == 1234);
+
             _service
-                .When(x => x.Demo(Arg.Any<Data>()))
-                .Do(x => hypothesis.Test(x.Arg<Data>()));
+                .Handle(Arg.Any<int>())
+                .Returns(5)
+                .AndDoes(x => hypothesis.Test(x.Arg<int>()));
 
             // Make sure the sidecar is running before executing this test! See README.md
             var client = new DaprClientBuilder()
                 .UseGrpcEndpoint("http://localhost:3000")
-                .UseHttpEndpoint("http://localhost:5000")
                 .Build();
             
             await client
