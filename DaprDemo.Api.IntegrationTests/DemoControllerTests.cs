@@ -3,31 +3,39 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Dapr.Client;
+using Divergic.Logging.Xunit;
 using FluentAssertions.Extensions;
 using Hypothesist;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Xunit;
 using NSubstitute;
+using Wrapr;
+using Xunit.Abstractions;
 
 namespace DaprDemo.Api.IntegrationTests
 {
-    public sealed class DemoControllerTests : IDisposable
+    public sealed class DemoControllerTests : IDisposable, IAsyncLifetime
     {
         private readonly IHost _host;
         private readonly IHandler<int, int> _service = Substitute.For<IHandler<int, int>>();
+        private readonly ICacheLogger _logger;
+        private readonly Sidecar _sidecar;
 
-        public DemoControllerTests()
+        public DemoControllerTests(ITestOutputHelper output)
         {
+            _logger = output.BuildLogger(LogLevel.Debug);
             _host = new HostBuilder().ConfigureWebHost(app => app
                     .UseStartup<Startup>()
+                    .ConfigureLogging(builder => builder.AddXunit(output))
                     .ConfigureServices(services => services.AddSingleton(_service))
                     .UseKestrel(options => options.ListenLocalhost(5555)))
                 .Build();
-            _host.Start();
+            _sidecar = new Sidecar("demo-app", _logger);
         }
-        
+
         [Fact]
         public async Task FromHttp()
         {
@@ -40,10 +48,10 @@ namespace DaprDemo.Api.IntegrationTests
                         value = 8374
                     }
                 });
-            
+
             response.EnsureSuccessStatusCode();
         }
-        
+
         [Fact]
         public async Task FromEvent()
         {
@@ -56,11 +64,10 @@ namespace DaprDemo.Api.IntegrationTests
                 .Returns(5)
                 .AndDoes(x => hypothesis.Test(x.Arg<int>()));
 
-            // Make sure the sidecar is running before executing this test! See README.md
-            var client = new DaprClientBuilder()
+            using var client = new DaprClientBuilder()
                 .UseGrpcEndpoint("http://localhost:3000")
                 .Build();
-            
+
             await client
                 .PublishEventAsync("rabbitmq-pubsub", "Demo", new
                 {
@@ -70,7 +77,23 @@ namespace DaprDemo.Api.IntegrationTests
             await hypothesis.Validate(10.Seconds());
         }
 
-        void IDisposable.Dispose() => 
+        void IDisposable.Dispose()
+        {
             _host.Dispose();
+            _logger.Dispose();
+        }
+
+        public async Task InitializeAsync()
+        {
+            await _host.StartAsync();
+            await _sidecar.Start(args => args
+                .ComponentsPath("components")
+                .AppPort(5555)
+                .DaprGrpcPort(3000)
+                .Args("--log-level", "debug"));
+        }
+
+        public async Task DisposeAsync() => 
+            await _sidecar.DisposeAsync();
     }
 }

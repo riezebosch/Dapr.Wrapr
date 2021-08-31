@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DaprDemo.Handler.Slow", "Da
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DaprDemo", "DaprDemo\DaprDemo.csproj", "{150646C9-636A-4A55-8D10-265ABBEAA2BD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wrapr", "Wrapr\Wrapr.csproj", "{0317D69C-C1FD-4085-9B77-C0BF81DE565E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wrapr.Tests", "Wrapr.Tests\Wrapr.Tests.csproj", "{9D4481BB-294F-4CBB-AB14-2E93F4F2877F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,5 +39,13 @@ Global
 		{150646C9-636A-4A55-8D10-265ABBEAA2BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{150646C9-636A-4A55-8D10-265ABBEAA2BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{150646C9-636A-4A55-8D10-265ABBEAA2BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0317D69C-C1FD-4085-9B77-C0BF81DE565E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0317D69C-C1FD-4085-9B77-C0BF81DE565E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0317D69C-C1FD-4085-9B77-C0BF81DE565E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0317D69C-C1FD-4085-9B77-C0BF81DE565E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D4481BB-294F-4CBB-AB14-2E93F4F2877F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D4481BB-294F-4CBB-AB14-2E93F4F2877F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D4481BB-294F-4CBB-AB14-2E93F4F2877F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D4481BB-294F-4CBB-AB14-2E93F4F2877F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

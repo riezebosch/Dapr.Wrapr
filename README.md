@@ -23,14 +23,9 @@ password | guest
 
 ## Dapr sidecar
 
-Prior to running the API integration tests you start the dapr runtime process in self-hosted mode:
+The API integration tests starts the dapr runtime process in self-hosted mode with the following arguments:
 ```
 dapr run --app-id test --app-port 5555  --dapr-grpc-port 5000 --components-path  ./DaprDemo.Api.IntegrationTests/components
-```
-
-Afterwards you stop it with the terminate signal, or from another process:
-```
-dapr stop --app-id test
 ```
 
 [Source](https://docs.dapr.io/developing-applications/sdks/dotnet/dotnet-development/dotnet-development-dapr-cli/#using-the-dapr-cli).
