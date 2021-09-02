@@ -69,7 +69,7 @@ namespace DaprDemo.Api.IntegrationTests
                 .Build();
 
             await client
-                .PublishEventAsync("rabbitmq-pubsub", "Demo", new
+                .PublishEventAsync("my-pubsub", "Demo", new
                 {
                     Value = 1234
                 });

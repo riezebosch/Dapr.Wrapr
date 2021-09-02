@@ -10,4 +10,16 @@
       <PackageReference Include="System.Linq.Async" Version="5.0.0" />
     </ItemGroup>
 
+    <PropertyGroup>
+        <Authors>Manuel Riezebosch</Authors>
+        <NeutralLanguage>en-US</NeutralLanguage>
+        <AssemblyTitle>Dapr.Wrapr</AssemblyTitle>
+        <Description>Start and stop the dapr sidecar in self hosted mode as part of your integration tests!</Description>
+        <PackageReleaseNotes>1st</PackageReleaseNotes>
+        <PackageTags>dapr;sidecar;test;integration test;tdd;full cycle;</PackageTags>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/riezebosch/Dapr.Wrapr.git</RepositoryUrl>
+        <Version>0.0.1</Version>
+    </PropertyGroup>
 </Project>
