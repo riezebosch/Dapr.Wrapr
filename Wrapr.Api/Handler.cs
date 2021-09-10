@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
-namespace DaprDemo.SlowDemo
+namespace DaprDemo.Api
 {
     public class Handler : IHandler<int, int>
     {

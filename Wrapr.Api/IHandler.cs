@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace DaprDemo
+namespace DaprDemo.Api
 {
     public interface IHandler<in TIn, TResult>
     {

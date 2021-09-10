@@ -3,6 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <IsPackable>false</IsPackable>
+        <RootNamespace>DaprDemo.Api.IntegrationTests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -25,7 +26,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DaprDemo.Api\DaprDemo.Api.csproj" />
+      <ProjectReference Include="..\Wrapr.Api\Wrapr.Api.csproj" />
       <ProjectReference Include="..\Wrapr\Wrapr.csproj" />
     </ItemGroup>
 
