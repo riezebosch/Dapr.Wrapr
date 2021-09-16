@@ -1,5 +1,10 @@
 # Dapr Wrapr
 
+[![nuget](https://img.shields.io/nuget/v/Wrapr.svg)](https://www.nuget.org/packages/Wrapr/)
+[![codecov](https://codecov.io/gh/riezebosch/Dapr.Wrapr/branch/main/graph/badge.svg)](https://codecov.io/gh/riezebosch/Dapr.Wrapr)
+[![stryker](https://img.shields.io/endpoint?style=flat&label=stryker&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Friezebosch%2FDapr.Wrapr%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/riezebosch/Dapr.Wrapr/main)
+[![build status](https://ci.appveyor.com/api/projects/status/hylup50uv4x0lvta/branch/main?svg=true)](https://ci.appveyor.com/project/riezebosch/dapr-wrapr)
+
 Wrapr is a library for [Dapr](https://dapr.io) to start and stop a sidecar to support integration testing.
 It works particularly well with the [In Memory](https://docs.dapr.io/reference/components-reference/supported-pubsub/setup-inmemory/) pubsub component
 but can also be used with other components.
