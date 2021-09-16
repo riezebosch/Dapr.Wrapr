@@ -5,7 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="CliWrap" Version="3.3.2" />
+      <PackageReference Include="CliWrap" Version="3.3.3" />
       <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
       <PackageReference Include="System.Linq.Async" Version="5.0.0" />
     </ItemGroup>
@@ -17,9 +17,14 @@
         <Description>Start and stop the dapr sidecar in self hosted mode as part of your integration tests!</Description>
         <PackageReleaseNotes>1st</PackageReleaseNotes>
         <PackageTags>dapr;sidecar;test;integration test;tdd;full cycle;</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/riezebosch/Dapr.Wrapr.git</RepositoryUrl>
         <Version>0.0.1</Version>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\README.md" Pack="true" PackagePath="" />
+    </ItemGroup>
 </Project>

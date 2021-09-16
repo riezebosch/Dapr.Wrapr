@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Dapr.Client;
 using Divergic.Logging.Xunit;
+using FluentAssertions;
 using FluentAssertions.Extensions;
 using Hypothesist;
 using Microsoft.AspNetCore.Hosting;
@@ -11,7 +12,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Xunit;
-using NSubstitute;
 using Wrapr;
 using Xunit.Abstractions;
 
@@ -20,9 +20,11 @@ namespace DaprDemo.Api.IntegrationTests
     public sealed class DemoControllerTests : IDisposable, IAsyncLifetime
     {
         private readonly IHost _host;
-        private readonly IHandler<int, int> _service = Substitute.For<IHandler<int, int>>();
         private readonly ICacheLogger _logger;
         private readonly Sidecar _sidecar;
+        private readonly IHypothesis<int> _hypothesis= Hypothesis
+            .For<int>()
+            .Any(x => x == 1234);
 
         public DemoControllerTests(ITestOutputHelper output)
         {
@@ -30,7 +32,7 @@ namespace DaprDemo.Api.IntegrationTests
             _host = new HostBuilder().ConfigureWebHost(app => app
                     .UseStartup<Startup>()
                     .ConfigureLogging(builder => builder.AddXunit(output))
-                    .ConfigureServices(services => services.AddSingleton(_service))
+                    .ConfigureServices(services => services.AddSingleton<IHandler<int, int>>(new TestHandler<int,int>(_hypothesis, 5)))
                     .UseKestrel(options => options.ListenLocalhost(5555)))
                 .Build();
             _sidecar = new Sidecar("demo-app", _logger);
@@ -43,27 +45,20 @@ namespace DaprDemo.Api.IntegrationTests
             var response = await client
                 .PostAsJsonAsync("http://localhost:5555/demo/", new
                 {
-                    data = new
-                    {
-                        value = 8374
-                    }
+                    value = 1234
                 });
 
             response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+            content.Should().Be("5");
+
+            await _hypothesis
+                .Validate(10.Seconds());
         }
 
         [Fact]
         public async Task FromEvent()
         {
-            var hypothesis = Hypothesis
-                .For<int>()
-                .Any(x => x == 1234);
-
-            _service
-                .Handle(Arg.Any<int>())
-                .Returns(5)
-                .AndDoes(x => hypothesis.Test(x.Arg<int>()));
-
             using var client = new DaprClientBuilder()
                 .UseGrpcEndpoint("http://localhost:3000")
                 .Build();
@@ -74,7 +69,8 @@ namespace DaprDemo.Api.IntegrationTests
                     Value = 1234
                 });
 
-            await hypothesis.Validate(10.Seconds());
+            await _hypothesis
+                .Validate(10.Seconds());
         }
 
         void IDisposable.Dispose()
