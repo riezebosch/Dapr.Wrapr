@@ -19,12 +19,12 @@ namespace Wrapr.Tests
         public async Task StartStop()
         {
             using var logger = _output.BuildLogger(LogLevel.Debug);
-            await using var sidecar = new Sidecar("asdf", logger);
+            await using var sidecar = new Sidecar("test-start-stop", logger);
             
             await sidecar.Start(with => with
                 .ComponentsPath(Directory.CreateDirectory("components-path").FullName)
                 .AppPort(3000)
-                .DaprGrpcPort(1234)
+                .DaprGrpcPort(1235)
                 .Args("--log-level", "warn"));
             await sidecar.Stop();
         }
@@ -35,13 +35,30 @@ namespace Wrapr.Tests
             Func<Task> act = async () =>
             {
                 using var logger = _output.BuildLogger(LogLevel.Debug);
-                await using var sidecar = new Sidecar("asdf", logger);
+                await using var sidecar = new Sidecar("test-error", logger);
                 await sidecar.Start(with => with.ComponentsPath("non-existing-components"));
             };
             
             await act
                 .Should()
-                .ThrowAsync<WraprException>();
+                .ThrowAsync<WraprException>()
+                .WithMessage("*non-existing-components*");
+        }
+        
+        [Fact(Skip = "ready functions not stopping after external program is closed")]
+        public async Task ErrorInput()
+        {
+            Func<Task> act = async () =>
+            {
+                using var logger = _output.BuildLogger(LogLevel.Debug);
+                await using var sidecar = new Sidecar("test-error-input", logger);
+                await sidecar.Start(with => with.Args("--metrics-port", "x"));
+            };
+            
+            await act
+                .Should()
+                .ThrowAsync<WraprException>()
+                .WithMessage("Sidecar stopped*");
         }
     }
 }

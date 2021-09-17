@@ -17,25 +17,21 @@ namespace Wrapr
             {
                 await foreach (var line in command
                     .ListenAsync()
-                    .OfType<StandardOutputCommandEvent>()
-                    .Select(x => x.Text))
+                    .Select(x => x.ToString()))
                 {
-                    logger.LogDebug(line); 
+                    logger.LogDebug(line);
                     if (Check(line, ready))
                     {
                         return;
                     }
                 }
-                
-                // when reaching this point the sidecar is already stopped before we recognized a success or fail from the output.
-                ready.TrySetException(new WraprException("Sidecar stopped prematurely, check the logger output for details."));
             });
 
             await ready.Task;
         }
 
         private static bool Check(string output, TaskCompletionSource ready) =>
-            output.First() switch
+            output.FirstOrDefault() switch
             {
                 '✅' => ready.TrySetResult(),
                 '❌' => ready.TrySetException(new WraprException(output)),
