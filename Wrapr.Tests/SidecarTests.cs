@@ -34,14 +34,14 @@ namespace Wrapr.Tests
         {
             Func<Task> act = async () =>
             {
-                await using var sidecar = new Sidecar("asdf");
+                using var logger = _output.BuildLogger(LogLevel.Debug);
+                await using var sidecar = new Sidecar("asdf", logger);
                 await sidecar.Start(with => with.ComponentsPath("non-existing-components"));
             };
             
             await act
                 .Should()
-                .ThrowAsync<WraprException>()
-                .WithMessage("** non-existing-components: no such file or directory");
+                .ThrowAsync<WraprException>();
         }
     }
 }

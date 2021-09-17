@@ -20,7 +20,7 @@ namespace Wrapr
 
         public ValueTask Start(Func<Run, Run> with) => 
             Cli.Wrap("dapr")
-                .WithArguments(with(Run.Create(_appId).LogAsJson()).Arguments)
+                .WithArguments(with(Run.Create(_appId)).Arguments)
                 .Ready(_logger);
 
         public async ValueTask Stop()
@@ -28,7 +28,7 @@ namespace Wrapr
             if (await IsRunning())
             {
                 await Cli.Wrap("dapr")
-                    .WithArguments(new [] { "stop", "--app-id", _appId, "--log-as-json" })
+                    .WithArguments(new [] { "stop", "--app-id", _appId })
                     .Ready(_logger)
                     .ConfigureAwait(false);
             }

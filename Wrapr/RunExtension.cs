@@ -15,9 +15,5 @@ namespace Wrapr
         
         public static Run DaprGrpcPort(this Run run, int port) => 
             run.Args("--dapr-grpc-port", port.ToString());
-
-        public static Run LogAsJson(this Run run) =>
-            run.Args("--log-as-json");
-
     }
 }

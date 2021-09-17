@@ -1,5 +1,5 @@
+using System;
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using CliWrap;
@@ -20,42 +20,26 @@ namespace Wrapr
                     .OfType<StandardOutputCommandEvent>()
                     .Select(x => x.Text))
                 {
-                    if (line.StartsWith("{"))
+                    logger.LogDebug(line); 
+                    if (Check(line, ready))
                     {
-                        var output = JsonSerializer.Deserialize<Output>(line);
-                        logger.LogInformation(output.Message.Trim());
-
-                        Check(output, ready);
-                    }
-                    else
-                    {
-                        logger.LogDebug(line); 
+                        return;
                     }
                 }
+                
+                // when reaching this point the sidecar is already stopped before we recognized a success or fail from the output.
+                ready.TrySetException(new WraprException("Sidecar stopped prematurely, check the logger output for details."));
             });
 
-            await ready.Task.ConfigureAwait(false);
+            await ready.Task;
         }
 
-        private static void Check(Output output, TaskCompletionSource ready)
-        {
-            switch (output.Status)
+        private static bool Check(string output, TaskCompletionSource ready) =>
+            output.First() switch
             {
-                case "success":
-                    ready.TrySetResult();
-                    break;
-                case "failure":
-                    ready.TrySetException(new WraprException(output.Message));
-                    break;
-            }
-        }
-
-        private struct Output
-        {
-            [JsonPropertyName("msg")]
-            public string Message { get; set; }
-            [JsonPropertyName("status")]
-            public string Status { get; set; }
-        }
+                '✅' => ready.TrySetResult(),
+                '❌' => ready.TrySetException(new WraprException(output)),
+                _ => false
+            };
     }
 }
