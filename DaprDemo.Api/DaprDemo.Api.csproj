@@ -10,7 +10,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DaprDemo.Handler.Slow\DaprDemo.Handler.Slow.csproj" />
+      <ProjectReference Include="..\DaprDemo.Handlers.Slow\DaprDemo.Handlers.Slow.csproj" />
       <ProjectReference Include="..\DaprDemo\DaprDemo.csproj" />
     </ItemGroup>
 

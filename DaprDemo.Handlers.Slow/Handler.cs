@@ -1,13 +1,13 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
-namespace DaprDemo.SlowDemo
+namespace DaprDemo.Handlers.Slow
 {
     public class Handler : IHandler<int, int>
     {
         private readonly ILogger _logger;
 
-        public Handler(ILogger<Handler> logger) => 
+        public Handler(ILogger logger) => 
             _logger = logger;
 
         public async Task<int> Handle(int input) => 
