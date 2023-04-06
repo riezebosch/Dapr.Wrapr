@@ -37,7 +37,7 @@ namespace Wrapr.Tests
             {
                 using var logger = _output.BuildLogger(LogLevel.Debug);
                 await using var sidecar = new Sidecar("test-error", logger);
-                await sidecar.Start(with => with.ComponentsPath("non-existing-components"));
+                await sidecar.Start(with => with.ResourcesPath("non-existing-components"));
             };
             
             await act
