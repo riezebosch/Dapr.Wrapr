@@ -22,9 +22,10 @@ namespace Wrapr.Tests
             await using var sidecar = new Sidecar("test-start-stop", logger);
             
             await sidecar.Start(with => with
-                .ComponentsPath(Directory.CreateDirectory("components-path").FullName)
+                .ResourcesPath(Directory.CreateDirectory("resources-path").FullName)
                 .AppPort(3000)
                 .DaprGrpcPort(1235)
+                .DaprHttpPort(2345)
                 .Args("--log-level", "warn"));
             await sidecar.Stop();
         }
