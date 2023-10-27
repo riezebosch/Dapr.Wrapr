@@ -1,0 +1,10 @@
+{
+  "stryker-config":
+  {
+    "project": "Wrapr.csproj",
+    "project-info": {
+      "name": "github.com/riezebosch/Dapr.Wrapr",
+      "version": "main"
+    }
+  }
+}

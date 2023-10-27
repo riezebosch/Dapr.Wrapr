@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Wrapr
@@ -8,7 +9,7 @@ namespace Wrapr
         public static Run Args(this Run run, params string[] arguments) =>
             new(run.Arguments.Concat(arguments));
 
-        [Obsolete(@"Flag --components-path has been deprecated, This flag is deprecated and will be removed in the future releases. Use ""resources-path"" flag instead")]
+        [Obsolete(@"Flag --components-path has been deprecated, This flag is deprecated and will be removed in the future releases. Use ""resources-path"" flag instead"), ExcludeFromCodeCoverage]
         public static Run ComponentsPath(this Run run, string path) =>
             run.Args("--components-path", path);
         

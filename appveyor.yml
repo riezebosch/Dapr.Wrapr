@@ -21,7 +21,7 @@ before_test:
   - sudo wget -q https://raw.githubusercontent.com/dapr/cli/master/install/install.sh -O - | /bin/bash
   - dapr init --slim
 after_test:
-  - dotnet tool restore && cd Wrapr.Tests && dotnet dotnet-stryker
+  - dotnet tool restore && dotnet dotnet-stryker
 test_script:
   - dotnet test --collect:"XPlat Code Coverage"
 environment:
@@ -39,7 +39,7 @@ for:
         secure: qJ2eTguSaMRR/xgLMgHV+eN8wLHLxMyyAo0sbUdt+JkYmHR2LDntlettI/YJDT7n
     after_test:
       - bash <(curl -s https://codecov.io/bash)
-      - dotnet tool restore && cd Wrapr.Tests && dotnet dotnet-stryker --reporters "['dashboard']" --dashboard-api-key $STRYKER_DASHBOARD_API_KEY --dashboard-project github.com/riezebosch/Dapr.Wrapr/main
+      - dotnet tool restore && dotnet stryker --reporter dashboard --dashboard-api-key $STRYKER_DASHBOARD_API_KEY -c 4
     deploy:
       - provider: NuGet
         api_key:
