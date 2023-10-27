@@ -64,7 +64,7 @@ namespace DaprDemo.Api.IntegrationTests
                 .UseGrpcEndpoint("http://localhost:3000")
                 .Build();
 
-            await client.WaitForSidecarAsync();
+            // await client.WaitForSidecarAsync();
             await client
                 .PublishEventAsync("my-pubsub", "Demo", new
                 {
@@ -84,10 +84,10 @@ namespace DaprDemo.Api.IntegrationTests
         public async Task InitializeAsync()
         {
             await _host.StartAsync();
-            await _sidecar.Start(args => args
+            await _sidecar.Start(with => with
                 .ResourcesPath("components")
                 .AppPort(5555)
-                .DaprHttpPort(3001)
+                // .DaprHttpPort(3001)
                 .DaprGrpcPort(3000)
                 .Args("--log-level", "debug"));
         }

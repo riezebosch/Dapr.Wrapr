@@ -23,9 +23,9 @@ namespace Wrapr.Tests
             
             await sidecar.Start(with => with
                 .ResourcesPath(Directory.CreateDirectory("resources-path").FullName)
-                .AppPort(3000)
-                .DaprGrpcPort(1235)
-                .DaprHttpPort(2345)
+                .AppPort(3015)
+                .DaprGrpcPort(0)
+                .DaprHttpPort(0)
                 .Args("--log-level", "warn"));
             await sidecar.Stop();
         }
@@ -46,10 +46,10 @@ namespace Wrapr.Tests
                 .WithMessage("*non-existing-components*");
         }
         
-        [Fact(Skip = "ready functions not stopping after external program is closed")]
+        [Fact]
         public async Task ErrorInput()
         {
-            Func<Task> act = async () =>
+            var act = async () =>
             {
                 using var logger = _output.BuildLogger(LogLevel.Debug);
                 await using var sidecar = new Sidecar("test-error-input", logger);
@@ -59,7 +59,7 @@ namespace Wrapr.Tests
             await act
                 .Should()
                 .ThrowAsync<WraprException>()
-                .WithMessage("Sidecar stopped*");
+                .WithMessage("Error: invalid argument \"x\" for \"-M, --metrics-port\"*");
         }
     }
 }

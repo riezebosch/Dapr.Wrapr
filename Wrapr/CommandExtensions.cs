@@ -4,36 +4,24 @@ using CliWrap;
 using CliWrap.EventStream;
 using Microsoft.Extensions.Logging;
 
-namespace Wrapr
+namespace Wrapr;
+
+internal static class CommandExtensions
 {
-    internal static class CommandExtensions
-    {
-        public static async ValueTask Ready(this Command command, ILogger logger)
+    public static async ValueTask Ready(this Command command, string expected, ILogger logger) =>
+        await command
+            .WithStandardErrorPipe(PipeTarget.ToDelegate(s => logger.LogError(s)))
+            .WithStandardOutputPipe(PipeTarget.ToDelegate(s => logger.LogInformation(s)))
+            .ListenAsync()
+            .Select(x => x)
+            .AnyAsync(line => Check(line, expected));
+
+    private static bool Check(CommandEvent command, string ready) =>
+        command switch
         {
-            var ready = new TaskCompletionSource();
-            _ = Task.Run(async () =>
-            {
-                await foreach (var line in command
-                    .ListenAsync()
-                    .Select(x => x.ToString()))
-                {
-                    logger.LogDebug(line);
-                    if (Check(line, ready))
-                    {
-                        return;
-                    }
-                }
-            });
-
-            await ready.Task;
-        }
-
-        private static bool Check(string output, TaskCompletionSource ready) =>
-            output.FirstOrDefault() switch
-            {
-                '✅' => ready.TrySetResult(),
-                '❌' => ready.TrySetException(new WraprException(output)),
-                _ => false
-            };
-    }
+            ExitedCommandEvent => true,
+            StandardOutputCommandEvent output when output.Text.Contains(ready) => true,
+            StandardErrorCommandEvent error =>  throw new WraprException(error.Text),
+            _ => false
+        };
 }
