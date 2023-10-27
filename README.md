@@ -16,7 +16,7 @@ but can also be used with other components.
 ```c#
 await using var sidecar = new Sidecar("integration-test");
 await sidecar.Start(with => with
-    .ComponentsPath("components-path")
+    .ResourcesPath("components-path")
     .DaprGrpcPort(1234) 
     .Args("--log-level", "warn"));
 
@@ -38,13 +38,13 @@ new HostBuilder().ConfigureWebHost(app => app
 
 ```c#
 using var client = new DaprClientBuilder()
-    .UseGrpcEndpoint("http://localhost:<mark>1234</mark>")
+    .UseGrpcEndpoint("http://localhost:1234")
     .Build();
 
 await client
     .PublishEventAsync("my-pubsub", "Demo", new
     {
-        Value = 1234
+        Value = 1111
     });
 ```
 
@@ -59,7 +59,7 @@ I've had great success with my own "future assertion" library [hypothesist](http
 ```c#
 var hypothesis = Hypothesis
     .For<int>()
-    .Any(x => x == 1234);
+    .Any(x => x == 1111);
 ```
 
 After that you only need a stub that tests the hypothesis before you can validate it.
