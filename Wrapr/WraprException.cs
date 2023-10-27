@@ -1,11 +1,10 @@
 using System;
 
-namespace Wrapr
+namespace Wrapr;
+
+public class WraprException : Exception
 {
-    public class WraprException : Exception
+    public WraprException(string message) : base(message)
     {
-        public WraprException(string message) : base(message)
-        {
-        }
     }
 }
