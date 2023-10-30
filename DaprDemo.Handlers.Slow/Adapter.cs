@@ -1,17 +1,16 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace DaprDemo.Handlers.Slow;
 
-public class Handler : IHandler<int, int>
+public class Adapter : Do
 {
     private readonly ILogger _logger;
 
-    public Handler(ILogger logger) => 
+    public Adapter(ILogger logger) => 
         _logger = logger;
 
-    public async Task<int> Handle(int input) => 
+    public async Task<int> SomeMagic(int input) => 
         await Slow(input);
 
     private async Task<int> Slow(int n)

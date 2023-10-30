@@ -7,11 +7,10 @@ namespace DaprDemo.Api;
 public class Startup
 {
     // This method gets called by the runtime. Use this method to add services to the container.
-    public void ConfigureServices(IServiceCollection services)
-    {
-        services.AddScoped<IHandler<int, int>, Handlers.Slow.Handler>();
-        services.AddControllers();
-    }
+    public void ConfigureServices(IServiceCollection services) =>
+        services
+            .AddScoped<Do, Handlers.Slow.Adapter>()
+            .AddControllers();
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
