@@ -67,22 +67,21 @@ For example using [NSubstitute](https://nsubstitute.github.io/):
 
 ```c#
 service
-    .Handle(Arg.Any<int>())
-    .Returns(5)
-    .AndDoes(x => hypothesis.Test(x.Arg<int>()));
+    .SomeMagic(Arg.Any<int>())
+    .Returns(x => hypothesis.Test(x.Arg<int>()));
 ```
 
 or with a very slim hand-rolled implementation that does exactly that:
 
 ```c#
-private class TestHandler<T> : IHandler<T>
+private class TestAdapter : Do
 {
-    private readonly IHypothesis<T> _hypothesis;
+    private readonly IHypothesis<int> _hypothesis;
 
-    public TestHandler(IHypothesis<T> hypothesis) => 
+    public TestAdapter(IHypothesis<int> hypothesis) => 
         _hypothesis = hypothesis;
 
-    public Task Handle(T input) =>
+    Task<int> Do.SomeMagic(int input) =>
         _hypothesis.Test(input);
 }
 ```
@@ -94,3 +93,5 @@ After that you validate the hypothesis of having received a message with specifi
 await hypothesis
     .Validate(10.Seconds());
 ```
+
+You should checkout the [example](Example) for the full picture.

@@ -10,7 +10,7 @@ internal class TestAdapter : Do
     public TestAdapter(IHypothesis<int> hypothesis) => 
         _hypothesis = hypothesis;
 
-    public async Task<int> SomeMagic(int input)
+    async Task<int> Do.SomeMagic(int input)
     {
         await _hypothesis.Test(input);
         return 5;

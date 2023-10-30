@@ -25,7 +25,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\DaprDemo.Api\DaprDemo.Api.csproj" />
-      <ProjectReference Include="..\Wrapr\Wrapr.csproj" />
+      <ProjectReference Include="..\..\Wrapr\Wrapr.csproj" />
     </ItemGroup>
 
     <ItemGroup>
