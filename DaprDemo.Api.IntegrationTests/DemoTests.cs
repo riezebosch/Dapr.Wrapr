@@ -60,24 +60,44 @@ public sealed class DemoTests : IDisposable, IAsyncLifetime
             .Validate(10.Seconds());
     }
 
-        [Fact]
-        public async Task FromEvent()
-        {
-            using var client = new DaprClientBuilder()
-                .UseHttpEndpoint("http://localhost:3001")
-                .UseGrpcEndpoint("http://localhost:3000")
-                .Build();
+    [Fact]
+    public async Task FromEvent()
+    {
+        using var client = new DaprClientBuilder()
+            .UseGrpcEndpoint($"http://localhost:{DaprGrpcPort}")
+            .Build();
 
-            // await client.WaitForSidecarAsync();
-            await client
-                .PublishEventAsync("my-pubsub", "Demo", new
-                {
-                    Value = 1234
-                });
+        await client
+            .PublishEventAsync("my-pubsub", "Demo", new
+            {
+                Value = 1234
+            });
 
-            await _hypothesis
-                .Validate(10.Seconds());
-        }
+        await _hypothesis
+            .Validate(10.Seconds());
+    }
+        
+    [Fact]
+    public async Task UsingClientMethodsToManageSidecar()
+    {
+        using var client = new DaprClientBuilder()
+            .UseHttpEndpoint($"http://localhost:{DaprHttpPort}")
+            .UseGrpcEndpoint($"http://localhost:{DaprGrpcPort}")
+            .Build();
+
+        await client.WaitForSidecarAsync();
+        await client
+            .PublishEventAsync("my-pubsub", "Demo", new
+            {
+                Value = 1234
+            });
+
+        await _hypothesis
+            .Validate(10.Seconds());
+
+        await client.ShutdownSidecarAsync();
+        await Task.Delay(500); // this will interferes with the other tests otherwise, because the port is not available in time.
+    }
 
     void IDisposable.Dispose()
     {
