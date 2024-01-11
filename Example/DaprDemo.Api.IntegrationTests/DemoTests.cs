@@ -28,11 +28,10 @@ public sealed class DemoTests
     [Fact]
     public async Task FromEvent()
     {
-        var hypothesis = Hypothesis
-            .For<Data>()
-            .Any(x => x == new Data(1234));
+        var observer = Observer
+            .For<Data>();
         
-        await using var app = await App(hypothesis);
+        await using var app = await App(observer);
         await using var sidecar = await Sidecar();
 
         using var client = new DaprClientBuilder()
@@ -45,18 +44,21 @@ public sealed class DemoTests
                 Value = 1234
             });
 
-        await hypothesis
-            .Validate(10.Seconds());
+        await Hypothesis
+            .On(observer)
+            .Timebox(10.Seconds())
+            .Any()
+            .Match(new Data(1234))
+            .Validate();
     }
 
     [Fact]
     public async Task UsingClientMethodsToManageSidecar()
     {
-        var hypothesis = Hypothesis
-            .For<Data>()
-            .Any(x => x == new Data(1234));
+        var observer = Observer
+            .For<Data>();
         
-        await using var app = await App(hypothesis);
+        await using var app = await App(observer);
         await using var sidecar = await Sidecar();
 
         using var client = new DaprClientBuilder()
@@ -71,14 +73,18 @@ public sealed class DemoTests
                 Value = 1234
             });
 
-        await hypothesis
-            .Validate(10.Seconds());
+        await Hypothesis
+            .On(observer)
+            .Timebox(10.Seconds())
+            .Any()
+            .Match(new Data(1234))
+            .Validate();
 
         await client.ShutdownSidecarAsync();
         await Task.Delay(1.Seconds()); // this will interferes with the other tests otherwise, because the port is not available in time.
     }
 
-    private async Task<WebApplication> App(IHypothesis<Data> hypothesis)
+    private async Task<WebApplication> App(Observer<Data> observer)
     {
         var builder = WebApplication.CreateBuilder(new[] { $"--urls=http://localhost:{AppPort}" });
         builder
@@ -98,10 +104,9 @@ public sealed class DemoTests
         app.UseDeveloperExceptionPage()
             .UseCloudEvents();
         
-        app.Map().AddEndpointFilter(hypothesis
-            .Test()
+        app.Map().AddEndpointFilter(observer
             .FromEndpoint()
-            .Select(x => x.GetArgument<Data>(0))
+            .With(x => x.GetArgument<Data>(0))
             .When(x => x.HttpContext.Request.Path == "/orders"));
 
         await app.StartAsync();
